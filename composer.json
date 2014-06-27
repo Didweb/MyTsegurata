@@ -1,0 +1,32 @@
+{
+	"name": "didweb/myt-segurata",
+	"description": "MyT Framework - Sistema Accesos",
+	"keywords": ["accesos", "acceso password", "restringido","control accesos"],
+	"homepage": "https://github.com/Didweb",
+	"time": "2014-6-27",
+	"type": "MyT-framework",
+	"license": "GPLv3",
+	"authors": [
+		{
+			"name": "Eduard Pinuaga",
+			"email": "info@did-web.com",
+			"homepage": "http://www.did-web.com",
+			"role": "Developer"
+		}
+	],
+	"repositories":[
+	
+			{
+            "type": "vcs",
+            "url": "git@github.com:Didweb/MyTsegurata.git"
+        }
+	],
+	"support": {
+		"email": "info@did-web.com",
+		"source": "https://github.com/Didweb/MyTsegurata",
+		"issues": "https://github.com/Didweb/MyTsegurata/issues"
+    },
+	"require": {
+		"phpunit/phpunit": "4.1.*"
+	}
+}
