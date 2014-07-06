@@ -10,6 +10,8 @@ class mySegurata
 	private $in_lista;
 	private $in_listapsw;
 	
+	private $comodin = 'anarquia';
+	
 	private $res_entrada;
 	private $session;
 	private $cookie;
@@ -216,6 +218,8 @@ class mySegurata
 	
 	public function checkeo($usuario,$password)
 	{
+		$password = $pasword.$this->comodin;
+		$password = sha1($password);
 		if($usuario != null && $password != null){
 				
 				
