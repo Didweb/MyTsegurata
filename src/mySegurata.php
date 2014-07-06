@@ -218,7 +218,7 @@ class mySegurata
 	
 	public function checkeo($usuario,$password)
 	{
-		$password = $pasword.$this->comodin;
+		$password = $password.$this->comodin;
 		$password = sha1($password);
 		if($usuario != null && $password != null){
 				
