@@ -10,7 +10,7 @@ class mySegurata
 	private $in_lista;
 	private $in_listapsw;
 	
-	private $comodin = 'anarquia';
+	private $comodin;
 	
 	private $res_entrada;
 	private $session;
@@ -25,6 +25,7 @@ class mySegurata
 	  $this->acceso 		= $parametros['acceso']; 
 	  $this->session 		= $parametros['session']; 
 	  $this->cookie 		= $parametros['cookie']; 
+	  $this->comodin 		= $parametros['comodin']; 
 	  
 	  
 	  if(isset($parametros['opcionCookie'])) {
