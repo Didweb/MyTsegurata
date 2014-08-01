@@ -1,4 +1,5 @@
 <?php
+require_once 'vendor/autoload.php';
 require_once('src/mySegurata.php');
 
 class LocaleTest extends PHPUnit_Framework_TestCase
@@ -7,11 +8,27 @@ class LocaleTest extends PHPUnit_Framework_TestCase
 	
 	public function setup()
 	{
-		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:pass2,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'pass1:15','comodin'=>'anarquia');
+		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:pass2,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'pass1:15','comodin'=>'anarquia','fuenteacceso'=>'txt','datosfuente'=>'usuarios:usuario:password:acceso');
 		$acceso = new mySegurata($parametros);	
 		$this->acceso = $acceso;
 		
 	}
+	
+	public function testUsuarioBBDD()
+	{
+		ORM::configure('mysql:host=localhost;dbname=acceso');
+		ORM::configure('username', 'root');
+		ORM::configure('password', 'rasmysql');	
+		
+		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:pass2,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'pass1:15','comodin'=>'anarquia','fuenteacceso'=>'bbdd','datosfuente'=>'usuarios:usuario:password:acceso');
+		$acceso = new mySegurata($parametros);	
+
+		$visita = $acceso->visita('p','pep');
+		$entrada = $acceso->getRes_entrada();
+		$this->assertEquals(1, $entrada);
+		$this->assertEquals(2, $acceso->getAcceso());
+	}
+	
 	
 	
 	public function testExisteArchivo()
@@ -20,7 +37,7 @@ class LocaleTest extends PHPUnit_Framework_TestCase
 	}
 	
 	public function testInstanciarObjeto()
-	{	$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:pass2,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'pass1:15','comodin'=>'anarquia');
+	{	$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:pass2,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'pass1:15','comodin'=>'anarquia','fuenteacceso'=>'txt','datosfuente'=>'usuarios:usuario:password:acceso');
 		$this->assertInstanceOf('mySegurata', new mySegurata($parametros));
 	}
 
@@ -49,7 +66,7 @@ class LocaleTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('0', $opcion);
 		
 		//definiendo opcion cookie en 1 = si
-		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:pass2,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'','opcionCookie'=>1,'comodin'=>'anarquia');
+		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:pass2,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'','opcionCookie'=>1,'comodin'=>'anarquia','fuenteacceso'=>'txt','datosfuente'=>'usuarios:usuario:password:acceso');
 		$acceso2 = new mySegurata($parametros);	
 		
 		
@@ -125,35 +142,35 @@ class LocaleTest extends PHPUnit_Framework_TestCase
 	public function testVisita()
 	{
 		// entrada con parametros password y usuario null
-		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:5d212bd2fed57636c27d15965598817b1e45d3ca,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'','comodin'=>'anarquia');
+		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:5d212bd2fed57636c27d15965598817b1e45d3ca,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'','comodin'=>'anarquia','fuenteacceso'=>'txt','datosfuente'=>'usuarios:usuario:password:acceso');
 		$acceso2 = new mySegurata($parametros);	
 		$visita = $acceso2->visita();
 		$this->assertEquals(0,$visita);
 		$this->assertInternalType('integer', $visita);
 		
 		// entrada por visita con acceso permitido
-		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:27262d61bd0a121b293d29f9b5d22220ef3f2a55,Pepito:5d212bd2fed57636c27d15965598817b1e45d3ca,Antonio:58a90eb18d900be92f185276b5af7e8fe8f75cd5','acceso'=>0,'session'=>'','cookie'=>'','comodin'=>'anarquia');
+		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:27262d61bd0a121b293d29f9b5d22220ef3f2a55,Pepito:5d212bd2fed57636c27d15965598817b1e45d3ca,Antonio:58a90eb18d900be92f185276b5af7e8fe8f75cd5','acceso'=>0,'session'=>'','cookie'=>'','comodin'=>'anarquia','fuenteacceso'=>'txt','datosfuente'=>'usuarios:usuario:password:acceso');
 		$acceso2 = new mySegurata($parametros);
 		$visita = $acceso2->visita('Pepito','pass2');
 		$this->assertEquals(1, $visita);
 		$this->assertInternalType('integer', $visita);
 		
 		// con uno d elos parametros (usuario o password) en null
-		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:27262d61bd0a121b293d29f9b5d22220ef3f2a55,Pepito:5d212bd2fed57636c27d15965598817b1e45d3ca,Antonio:58a90eb18d900be92f185276b5af7e8fe8f75cd5','acceso'=>0,'session'=>'','cookie'=>'','comodin'=>'anarquia');
+		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:27262d61bd0a121b293d29f9b5d22220ef3f2a55,Pepito:5d212bd2fed57636c27d15965598817b1e45d3ca,Antonio:58a90eb18d900be92f185276b5af7e8fe8f75cd5','acceso'=>0,'session'=>'','cookie'=>'','comodin'=>'anarquia','fuenteacceso'=>'txt','datosfuente'=>'usuarios:usuario:password:acceso');
 		$acceso2 = new mySegurata($parametros);
 		$visita = $acceso2->visita('Pepito');
 		$this->assertEquals(0, $visita);
 		$this->assertInternalType('integer', $visita);
 		
 		// con un valor de cookie incorrecto
-		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:27262d61bd0a121b293d29f9b5d22220ef3f2a55,Pepito:5d212bd2fed57636c27d15965598817b1e45d3ca,Antonio:58a90eb18d900be92f185276b5af7e8fe8f75cd5','acceso'=>0,'session'=>'','cookie'=>'xxxx','comodin'=>'anarquia');
+		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:27262d61bd0a121b293d29f9b5d22220ef3f2a55,Pepito:5d212bd2fed57636c27d15965598817b1e45d3ca,Antonio:58a90eb18d900be92f185276b5af7e8fe8f75cd5','acceso'=>0,'session'=>'','cookie'=>'xxxx','comodin'=>'anarquia','fuenteacceso'=>'txt','datosfuente'=>'usuarios:usuario:password:acceso');
 		$acceso2 = new mySegurata($parametros);
 		$visita = $acceso2->visita();
 		$this->assertEquals(0, $visita);
 		$this->assertInternalType('integer', $visita);
 		
 		// con un valor de session incorrecto
-		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:27262d61bd0a121b293d29f9b5d22220ef3f2a55,Pepito:5d212bd2fed57636c27d15965598817b1e45d3ca,Antonio:58a90eb18d900be92f185276b5af7e8fe8f75cd5','acceso'=>0,'session'=>'yyyyy','cookie'=>'','comodin'=>'anarquia');
+		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:27262d61bd0a121b293d29f9b5d22220ef3f2a55,Pepito:5d212bd2fed57636c27d15965598817b1e45d3ca,Antonio:58a90eb18d900be92f185276b5af7e8fe8f75cd5','acceso'=>0,'session'=>'yyyyy','cookie'=>'','comodin'=>'anarquia','fuenteacceso'=>'txt','datosfuente'=>'usuarios:usuario:password:acceso');
 		$acceso2 = new mySegurata($parametros);
 		$visita = $acceso2->visita();
 		$this->assertEquals(0, $visita);
@@ -182,7 +199,7 @@ class LocaleTest extends PHPUnit_Framework_TestCase
 	public function testResultadEntrada()
 	{
 		// Comprobar Set y Get de ListaPSW
-		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:pass2,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'','comodin'=>'anarquia');
+		$parametros = array('lista'=>'Juan:0,Pepito:1,Antonio:2','listaPSW'=>'Juan:pass1,Pepito:pass2,Antonio:pass3','acceso'=>0,'session'=>'','cookie'=>'','comodin'=>'anarquia','fuenteacceso'=>'txt','datosfuente'=>'usuarios:usuario:password:acceso');
 		$acceso2 = new mySegurata($parametros);
 		$entrada = $this->acceso->getRes_entrada();
 		$this->assertEquals(0,$entrada);
@@ -210,7 +227,7 @@ class LocaleTest extends PHPUnit_Framework_TestCase
 	public function testAccesos()
 	{
 		// Comprobar Set y Get de ListaPSW
-		$parametros = array('lista'=>'','listaPSW'=>'','acceso'=>0,'session'=>'','cookie'=>'','comodin'=>'anarquia');
+		$parametros = array('lista'=>'','listaPSW'=>'','acceso'=>0,'session'=>'','cookie'=>'','comodin'=>'anarquia','fuenteacceso'=>'txt','datosfuente'=>'usuarios:usuario:password:acceso');
 		$acceso2 = new mySegurata($parametros);
 		$visita = $acceso2->visita();
 		$this->assertEquals(0,$visita);

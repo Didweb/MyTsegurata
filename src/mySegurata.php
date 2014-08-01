@@ -18,6 +18,10 @@ class mySegurata
 	private $opcionCookie;
 	private $cookieExpira = 3600;
 	
+	private $fuenteacceso;
+	private $datosfuente;
+	
+	
 	public function __construct($parametros)
 	{
 	  $this->in_lista 		= $parametros['lista'];
@@ -26,6 +30,8 @@ class mySegurata
 	  $this->session 		= $parametros['session']; 
 	  $this->cookie 		= $parametros['cookie']; 
 	  $this->comodin 		= $parametros['comodin']; 
+	  $this->fuenteacceso 		= $parametros['fuenteacceso']; 
+	  $this->setDatosfuente($parametros['datosfuente']); 
 	  
 	  
 	  if(isset($parametros['opcionCookie'])) {
@@ -35,6 +41,23 @@ class mySegurata
 	   
 	}
 	
+	public function getFuenteacceso()
+	{
+		return $this->fuenteacceso;
+	}
+	
+	
+	public function setDatosfuente($valor)
+	{
+		$this->datosfuente = explode(':',$valor);
+		return $this;
+	}
+	
+
+	public function getDatosfuente()
+	{
+		return $this->datosfuente;
+	}
 	
 	public function setAcceso($valor)
 	{
@@ -223,6 +246,31 @@ class mySegurata
 		$password = sha1($password);
 		if($usuario != null && $password != null){
 				
+			
+			if($this->getFuenteacceso()=='bbdd'){
+				
+				$datos_fuente = $this->getDatosfuente();
+		
+			 
+				$existe = ORM::for_table($datos_fuente[0])
+							->where(array(
+									$datos_fuente[1] => $usuario,
+									$datos_fuente[2] => $password
+									))
+							->count();
+						
+				if($existe==1){
+					$usuario = ORM::for_table($datos_fuente[0])
+										->where(array(
+											$datos_fuente[1] => $usuario,
+											$datos_fuente[2] => $password
+											))
+										->find_one();
+						$this->setRes_entrada(1);				
+						$this->setUser($usuario->$datos_fuente[1]);				
+						return 	(int)$usuario->$datos_fuente[3];  }			
+				
+				} 	else {
 				
 			$lista_psw = $this->getListaPSW();	
 			
@@ -248,6 +296,7 @@ class mySegurata
 			$this->setRes_entrada(0);
 			return 0;	
 				
+				}
 				} else {
 			$this->setRes_entrada(0);
 			return 0; } }

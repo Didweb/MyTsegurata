@@ -27,6 +27,7 @@
 		"issues": "https://github.com/Didweb/MyTsegurata/issues"
     },
 	"require": {
-		"phpunit/phpunit": "4.1.*"
+		"phpunit/phpunit": "4.1.*",
+		"j4mie/idiorm": "1.5.*"
 	}
 }
